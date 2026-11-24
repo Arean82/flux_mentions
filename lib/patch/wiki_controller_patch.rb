@@ -9,18 +9,36 @@ module Patch
           project = @project
           return unless project
 
+          settings = Setting.plugin_flux_mentions || {}
+          return if settings['send_emails'] == '0' || settings['send_emails'] == false
+
           content = params[:content]['text'].to_s
           users = project.users.to_a.delete_if { |u| (u.type != 'User' || u.mail.blank?) }
-          settings = Setting.plugin_flux_mentions || {}
           mention_symbol = settings['symbol'].presence || '@'
           escaped_sym = Regexp.escape(mention_symbol)
+          group_enabled = settings['enable_group_mentions'] == '1' || settings['enable_group_mentions'] == true
           
-          mentioned_users = users.select do |u|
+          target_users = Set.new
+          users.each do |u|
             pattern = /(?:^|\s)#{escaped_sym}#{Regexp.escape(u.login)}(?=[^\w]|$)/
-            content =~ pattern
+            target_users << u if content =~ pattern
           end
 
-          mentioned_users.each do |mentioned_user|
+          if group_enabled
+            Group.all.each do |grp|
+              grp_ident = grp.lastname.presence || grp.name
+              pattern = /(?:^|\s)#{escaped_sym}#{Regexp.escape(grp_ident)}(?=[^\w]|$)/
+              if content =~ pattern
+                grp.users.active.each do |gu|
+                  target_users << gu if gu.mail.present? && project.users.include?(gu)
+                end
+              end
+            end
+          end
+
+          target_users.each do |mentioned_user|
+            next if mentioned_user.pref[:notify_mentions] == '0'
+
             if ActionMailer::Base.smtp_settings[:address].present?
               begin
                 WikiMailer.wiki_notification(@wiki, content, mentioned_user).deliver_now

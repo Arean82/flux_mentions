@@ -1,3 +1,13 @@
-# English strings go here for Rails i18n
 en:
-  # my_label: "My label"
+  label_flux_mentions: "Mentions"
+  label_mention_symbol: "Mention Trigger Symbol"
+  label_mention_symbol_hint: "The character typed to trigger mention autocomplete (default: @)."
+  label_enable_group_mentions: "Enable Group Mentions"
+  label_enable_group_mentions_hint: "Allows mentioning user groups (e.g. @developers). All group members with email addresses will be notified."
+  label_enable_rich_chips: "Enable Visual Mention Chips"
+  label_enable_rich_chips_hint: "Renders mentions as clean visual badges with user avatars in issue notes and descriptions."
+  label_send_emails: "Send Email Notifications"
+  label_send_emails_hint: "Dispatches instant email notifications to users and group members when they are mentioned."
+  label_mentioned_user: "Mentioned user"
+  label_pref_notify_mentions: "Email notifications for mentions"
+  label_pref_notify_mentions_hint: "Receive an email whenever someone mentions you or your team."

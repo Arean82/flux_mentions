@@ -1,52 +1,52 @@
+<%
+  settings = Setting.plugin_flux_mentions || {}
+  symbol = settings['symbol'].presence || '@'
+  group_enabled = settings['enable_group_mentions'] == '1' || settings['enable_group_mentions'] == true
 
+  if @project
+    users = @project.users.active.reject { |u| u.mail.blank? }
+  else
+    users = User.active.reject { |u| u.mail.blank? }
+  end
 
-<% if @project %>
-  <% users = @project.users.active.reject { |u| u.mail.blank? } %>
-<% else %>
-  <% users = User.active.reject { |u| u.mail.blank? } %>
-<% end %>
+  mention_items = users.map do |u|
+    name = "#{u.firstname} #{u.lastname}".strip
+    name = u.login if name.blank?
+    { key: u.login, value: u.login, display: "#{name} (@#{u.login})", type: 'user' }
+  end
 
-<% users_data = users.map { |user| { id: user.id, login: user.login } }.to_json %>
-<% symbol = Setting.plugin_flux_mentions['symbol'] %>
+  if group_enabled
+    Group.all.each do |grp|
+      name = grp.name
+      key = grp.lastname.presence || name
+      mention_items << { key: key, value: key, display: "#{name} [Group]", type: 'group' }
+    end
+  end
+%>
 
 <script>
 $(document).ready(function() {
-  var usersData = <%= users_data.html_safe %>;
-  var symbol = '<%= symbol %>';
-  
-  let tributed = new Tribute({
-    collection: [
-      {
-        trigger: symbol,
-        values: usersData,
-        lookup: 'login',
-        fillAttr: 'login',
-        requireLeadingSpace: true,
-        selectTemplate: function (item) {
-          return symbol + item.original.login;
-        }
-      }
-    ]
+  if (typeof Tribute === 'undefined') return;
+
+  var mentionData = <%= raw mention_items.to_json %>;
+  var mentionSymbol = <%= raw symbol.to_json %>;
+
+  var tributed = new Tribute({
+    values: mentionData,
+    lookup: 'display',
+    fillAttr: 'value',
+    requireLeadingSpace: true,
+    menuItemTemplate: function (item) {
+      var badge = item.original.type === 'group' ? '<span style="float:right;font-size:10px;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;">Group</span>' : '';
+      return '<span>' + item.string + '</span>' + badge;
+    },
+    selectTemplate: function(item) {
+      return mentionSymbol + item.original.value;
+    },
+    trigger: mentionSymbol
   });
 
-  var $wikiTextarea = $('textarea#content_text');
- 
-
-  $wikiTextarea.on('keydown', function(event) {
-    if (event.key === symbol && !event.repeat ) {
-    }
-  });
-
-
-  tributed.attach($wikiTextarea);
-
+  var $wiki = $('textarea#content_text');
+  if ($wiki.length) { tributed.attach($wiki); }
 });
-
-
-
-function sanitizeHTML(html) {
- 
-  return html;
-}
 </script>
-

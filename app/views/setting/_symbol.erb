@@ -1,5 +1,26 @@
-<p>
-<label>Select Mention Symbol :- </label>
-  <%= select_tag('settings[symbol]',
-                 options_for_select(['@','$',':','~','!','%'],settings['symbol'])) %>
-</p>
+<div class="box tabular">
+  <p>
+    <label><%= l(:label_mention_symbol) %></label>
+    <%= select_tag('settings[symbol]',
+                   options_for_select(['@', '$', ':', '~', '!', '%'], settings['symbol'] || '@')) %>
+    <em class="info"><%= l(:label_mention_symbol_hint) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_enable_group_mentions) %></label>
+    <%= check_box_tag('settings[enable_group_mentions]', 1, settings['enable_group_mentions'] == '1' || settings['enable_group_mentions'] == true) %>
+    <em class="info"><%= l(:label_enable_group_mentions_hint) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_enable_rich_chips) %></label>
+    <%= check_box_tag('settings[enable_rich_chips]', 1, settings['enable_rich_chips'] == '1' || settings['enable_rich_chips'] == true) %>
+    <em class="info"><%= l(:label_enable_rich_chips_hint) %></em>
+  </p>
+
+  <p>
+    <label><%= l(:label_send_emails) %></label>
+    <%= check_box_tag('settings[send_emails]', 1, settings['send_emails'] == '1' || settings['send_emails'] == true || settings['send_emails'].nil?) %>
+    <em class="info"><%= l(:label_send_emails_hint) %></em>
+  </p>
+</div>

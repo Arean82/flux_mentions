@@ -1,104 +1,92 @@
+<% if User.current.allowed_to?(:edit_issues, @project, :global => true) || User.current.allowed_to?(:add_issues, @project, :global => true) || User.current.admin? %>
 
-<% if User.current.allowed_to?(:edit_issues, @project ,:global=> true ) || User.current.allowed_to?(:add_issues, @project , :global=> true ) || User.current.admin? %>
+<%
+  settings = Setting.plugin_flux_mentions || {}
+  symbol = settings['symbol'].presence || '@'
+  group_enabled = settings['enable_group_mentions'] == '1' || settings['enable_group_mentions'] == true
 
+  if @project
+    users = @project.users.active.reject { |u| u.mail.blank? }
+  else
+    users = User.active.reject { |u| u.mail.blank? }
+  end
 
-<% if @project %>
-  <% users = @project.users.active.reject { |u| u.mail.blank? } %>
-<% else %>
+  mention_items = users.map do |u|
+    name = "#{u.firstname} #{u.lastname}".strip
+    name = u.login if name.blank?
+    { key: u.login, value: u.login, display: "#{name} (@#{u.login})", type: 'user' }
+  end
 
-<script>
-  var selectedValue  ;
-  var usersData ;
-  var projectField = document.getElementById('issue_project_id');
-    if(projectField !== null) { 
-     selectedValue = projectField.value;
-     console.log(selectedValue,'project value');
-   
-    }
-    
-  
- 
-</script>
- <% if defined?(selectedValue) %>
-<%= @project = selectedValue %>
-<% if @project.present? %>
-<%= @principal = Project.find(@project).principals %>
-  <% users = @principal.users.active.reject { |u| u.mail.blank? } %>
-  <% end %>
-  <% else %>
-    <% users = User.active.reject { |u| u.mail.blank? } %>
-  <% end %>
-<% end %>
-
-
-
-
-<% users_data = users.map { |user| { id: user.id, login: user.login } }.to_json %>
-<% symbol = Setting.plugin_flux_mentions['symbol'] %>
+  if group_enabled
+    Group.all.each do |grp|
+      name = grp.name
+      key = grp.lastname.presence || name
+      mention_items << { key: key, value: key, display: "#{name} [Group]", type: 'group' }
+    end
+  end
+%>
 
 <script>
-
-
 $(document).ready(function() {
-  var usersData = <%= users_data.html_safe %>;
-  var symbol = '<%= symbol %>';
+  if (typeof Tribute === 'undefined') return;
+
+  var mentionData = <%= raw mention_items.to_json %>;
+  var mentionSymbol = <%= raw symbol.to_json %>;
 
   var tributed = new Tribute({
-    values: usersData,
-    lookup: 'login',
-    fillAttr: 'login',
-     requireLeadingSpace: 'true',
-    selectTemplate: function(item) {
-      return symbol + item.original.login;
+    values: mentionData,
+    lookup: 'display',
+    fillAttr: 'value',
+    requireLeadingSpace: true,
+    menuItemTemplate: function (item) {
+      var badge = item.original.type === 'group' ? '<span style="float:right;font-size:10px;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;">Group</span>' : '';
+      return '<span>' + item.string + '</span>' + badge;
     },
-
-    trigger: symbol 
-    
+    selectTemplate: function(item) {
+      return mentionSymbol + item.original.value;
+    },
+    trigger: mentionSymbol
   });
 
+  var $desc = $('textarea#issue_description');
+  var $notes = $('textarea#issue_notes');
 
-
-   var $descriptionTextarea = $('textarea#issue_description');
-   tributed.attach($descriptionTextarea);  
-  // $descriptionTextarea.on('keydown', function(event) {
-  //   if (event.key === symbol   ) {
-      
-  //     //tributed.detach($descriptionTextarea,[0]);
-  //     // this.focus();
-  //     // tributed.showMenuForCollection(this, false); 
-  //     tributed.attach($descriptionTextarea,[0]);   
-  //   } 
-
-  // });
-// ---------
-
-
-
-// --------
-
-
-    var $notesTextarea = $('textarea#issue_notes');
-    tributed.attach($notesTextarea); 
-
-  //  $notesTextarea.on('keydown', function(event) {
-  //   if (event.key === symbol  ) {
-  //     //tributed.attach($notesTextarea,[0]);
-  //     // this.focus();
-  //     // tributed.showMenuForCollection(this, false);
-  //     tributed.attach($notesTextarea,[0]);
-  //      }   
-  //   });
-  });
-
-
-
-
+  if ($desc.length) { tributed.attach($desc); }
+  if ($notes.length) { tributed.attach($notes); }
+});
 </script>
+
 <style>
-
 .tribute-container {
-    height: 110px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: auto;
+  max-height: 220px;
+  overflow-y: auto;
+  display: block;
+  z-index: 999999;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
 }
-
+.tribute-container ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tribute-container li {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+.tribute-container li.highlight,
+.tribute-container li:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
 </style>
-<%end%>
+<% end %>

@@ -7,7 +7,7 @@
 **Author:** Arean Narrayan ([@Arean82](https://github.com/Arean82))  
 **Repository:** [https://github.com/Arean82/flux_mentions](https://github.com/Arean82/flux_mentions)  
 
-The Mentions Plugin brings user mentions to Redmine, enabling collaboration and communication across your team. Users can mention colleagues in issue descriptions, journals/notes, and wiki pages, with autocomplete suggestions and email alerts sent to the mentioned users.
+The Mentions Plugin brings user and group mentions to Redmine, enabling collaboration and communication across your team. Users can mention colleagues and teams in issue descriptions, journals/notes, and wiki pages with autocomplete suggestions, visual chips, email alerts, and custom issue query filters.
 
 ---
 
@@ -17,12 +17,15 @@ The Mentions Plugin brings user mentions to Redmine, enabling collaboration and 
 
 ---
 
-## 🚀 Key Features
+## 🚀 Key Features in Version 6.4.0
 
-* **Configurable Mention Symbol:** Customize the trigger symbol (`@`, `$`, `:`, `~`, `!`, `%`) from plugin settings.
-* **Autocomplete Suggestions:** Autocomplete powered by Tribute.js suggests active project members as you type the symbol.
-* **Instant Email Notifications:** Automatically dispatches email notifications to mentioned members when an issue is created, updated, or when wiki pages are edited.
-* **Auto-linked Mentions:** Formats mentions into clickable user profile links in rendered markdown and textile.
+* **🔍 Issue Query Filter ("Mentioned user"):** Filter issues list by `Mentioned user = me` or any user/group to quickly find every issue where you or a colleague was mentioned.
+* **👤 Per-User Notification Preferences:** Individual users can control whether they receive mention emails directly in **My Account** → **Preferences**.
+* **👥 Group Mentions (`@developers`, `@support`):** Mention entire teams. Notifies all members of that group with email addresses simultaneously.
+* **🎨 Visual Mention Chips:** Automatically formats mentions into styled user and group chips with distinct colors and profile links in rendered markdown and textile.
+* **⚡ Autocomplete Suggestions:** Clean autocomplete powered by Tribute.js displaying user full names, logins, and group indicators.
+* **📧 Instant Email Notifications:** Automatically dispatches email notifications to mentioned users and group members when issues are created or updated, and wiki pages are saved.
+* **⚙️ Modern Administration Interface:** Redmine-native settings interface with toggles for group mentions, visual chips, and email dispatches.
 * **Full Redmine 7.x & Rails 7 Compatibility:** Completely refactored for Zeitwerk autoloading using safe `to_prepare` hook loading.
 
 ---
@@ -72,12 +75,21 @@ sudo systemctl restart redmine
 
 ---
 
-## ⚙️ Configuration
+## 📖 Usage
 
-1. Log in to Redmine as an administrator.
-2. Go to **Administration** → **Plugins**.
-3. Locate **Redmineflux Mentions plugin** and click **Configure**.
-4. Choose your preferred mention trigger symbol (default: `@`) and save.
+### Mentioning Users and Groups
+* In any issue description, note, or wiki page, type `@` (or your configured symbol).
+* Start typing a name, login, or group name. Select from the dropdown list.
+* Upon saving, all mentioned users (and group members) receive instant email notifications.
+
+### Filtering Issues by Mentions
+* Navigate to **Issues**.
+* Expand **Add filter** and select **Mentioned user**.
+* Choose **<< me >>** to see all issues where you have been tagged in descriptions or notes!
+
+### Managing Notification Preferences
+* Click **My account** (top right).
+* Under **Mentions**, toggle **"Email notifications for mentions"** on or off.
 
 ---
 

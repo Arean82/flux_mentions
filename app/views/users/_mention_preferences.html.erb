@@ -1,0 +1,9 @@
+<fieldset class="box tabular">
+  <legend><%= l(:label_flux_mentions) %></legend>
+  <p>
+    <label><%= l(:label_pref_notify_mentions) %></label>
+    <%= hidden_field_tag 'pref[notify_mentions]', '0' %>
+    <%= check_box_tag 'pref[notify_mentions]', '1', (@user.pref[:notify_mentions] != '0') %>
+    <em class="info"><%= l(:label_pref_notify_mentions_hint) %></em>
+  </p>
+</fieldset>
