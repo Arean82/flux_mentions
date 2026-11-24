@@ -1,5 +1,6 @@
 en:
   label_flux_mentions: "Mentions"
+  label_my_mentions: "My Mentions"
   label_mention_symbol: "Mention Trigger Symbol"
   label_mention_symbol_hint: "The character typed to trigger mention autocomplete (default: @)."
   label_enable_group_mentions: "Enable Group Mentions"

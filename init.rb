@@ -9,7 +9,7 @@ Redmine::Plugin.register :flux_mentions do
   name 'Redmineflux Mentions plugin'
   author 'Arean Narrayan'
   description 'User & group mentions (@user, @group) in Notes, Descriptions, and Wiki content with autocomplete, email alerts, visual badges, and query filters.'
-  version '6.4.0'
+  version '6.5.0'
   url 'https://github.com/Arean82/flux_mentions'
   author_url 'https://github.com/Arean82/'
   requires_redmine version_or_higher: '5.0.0'
@@ -19,6 +19,12 @@ Redmine::Plugin.register :flux_mentions do
     'enable_rich_chips' => '1',
     'send_emails' => '1'
   }, partial: 'setting/symbol'
+
+  # Add direct top menu shortcut for logged in users
+  menu :top_menu, :my_mentions, { controller: 'my_mentions', action: 'index' },
+       caption: :label_my_mentions,
+       if: Proc.new { User.current.logged? },
+       after: :my_page
 end
 
 Rails.configuration.to_prepare do

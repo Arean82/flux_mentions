@@ -7,7 +7,7 @@
 **Author:** Arean Narrayan ([@Arean82](https://github.com/Arean82))  
 **Repository:** [https://github.com/Arean82/flux_mentions](https://github.com/Arean82/flux_mentions)  
 
-The Mentions Plugin brings user and group mentions to Redmine, enabling collaboration and communication across your team. Users can mention colleagues and teams in issue descriptions, journals/notes, and wiki pages with autocomplete suggestions, visual chips, email alerts, and custom issue query filters.
+The Mentions Plugin brings user and group mentions to Redmine, enabling collaboration and communication across your team. Users can mention colleagues and teams in issue descriptions, journals/notes, and wiki pages with autocomplete suggestions, visual chips, email alerts, a "My Mentions" top bar shortcut, and custom issue query filters.
 
 ---
 
@@ -17,8 +17,9 @@ The Mentions Plugin brings user and group mentions to Redmine, enabling collabor
 
 ---
 
-## 🚀 Key Features in Version 6.4.0
+## 🚀 Key Features in Version 6.5.0
 
+* **📌 Top Menu "My Mentions" Shortcut:** Quick one-click navigation link in the top menu bar right next to "My page", immediately listing all active issues where you have been tagged.
 * **🔍 Issue Query Filter ("Mentioned user"):** Filter issues list by `Mentioned user = me` or any user/group to quickly find every issue where you or a colleague was mentioned.
 * **👤 Per-User Notification Preferences:** Individual users can control whether they receive mention emails directly in **My Account** → **Preferences**.
 * **👥 Group Mentions (`@developers`, `@support`):** Mention entire teams. Notifies all members of that group with email addresses simultaneously.
@@ -76,6 +77,10 @@ sudo systemctl restart redmine
 ---
 
 ## 📖 Usage
+
+### "My Mentions" Quick Access
+* Log in to Redmine.
+* Click **My Mentions** in the top navigation bar (right next to **My page**) to instantly view all open issues where you were tagged in descriptions or discussion notes.
 
 ### Mentioning Users and Groups
 * In any issue description, note, or wiki page, type `@` (or your configured symbol).
