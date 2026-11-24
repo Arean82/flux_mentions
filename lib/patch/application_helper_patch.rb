@@ -3,8 +3,10 @@ module Patch
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.class_eval do
-        alias_method :parse_redmine_links_without_custom_mentions, :parse_redmine_links
-        alias_method :parse_redmine_links, :parse_redmine_links_with_custom_mentions
+        unless method_defined?(:parse_redmine_links_without_custom_mentions)
+          alias_method :parse_redmine_links_without_custom_mentions, :parse_redmine_links
+          alias_method :parse_redmine_links, :parse_redmine_links_with_custom_mentions
+        end
       end
     end
 
@@ -19,7 +21,7 @@ module Patch
             identifier = Regexp.last_match[:identifier]
 
             user = User.visible.find_by("LOWER(login) = :s AND type = 'User'", s: identifier.downcase)
-            user ? link_to("#{symbol}#{user.firstname+' '+ user.lastname}", { controller: 'users', action: 'show', id: user.id, only_path: only_path }, class: 'user-mention', mention: true) : "#{symbol}#{identifier}"
+            user ? link_to("#{symbol}#{user.firstname} #{user.lastname}", { controller: 'users', action: 'show', id: user.id, only_path: only_path }, class: 'user-mention', mention: true) : "#{symbol}#{identifier}"
           end
         end
 
@@ -28,5 +30,3 @@ module Patch
     end
   end
 end
-
-ApplicationHelper.send(:include, Patch::ApplicationHelperPatch)
