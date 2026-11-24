@@ -27,33 +27,39 @@
 %>
 
 <script>
-$(document).ready(function() {
-  if (typeof Tribute === 'undefined') return;
+(function() {
+  function initMentionTribute() {
+    if (typeof Tribute === 'undefined') return;
 
-  var mentionData = <%= raw mention_items.to_json %>;
-  var mentionSymbol = <%= raw symbol.to_json %>;
+    var mentionData = <%= raw mention_items.to_json %>;
+    var mentionSymbol = <%= raw symbol.to_json %>;
 
-  var tributed = new Tribute({
-    values: mentionData,
-    lookup: 'display',
-    fillAttr: 'value',
-    requireLeadingSpace: true,
-    menuItemTemplate: function (item) {
-      var badge = item.original.type === 'group' ? '<span style="float:right;font-size:10px;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;">Group</span>' : '';
-      return '<span>' + item.string + '</span>' + badge;
-    },
-    selectTemplate: function(item) {
-      return mentionSymbol + item.original.value;
-    },
-    trigger: mentionSymbol
-  });
+    var tributed = new Tribute({
+      values: mentionData,
+      lookup: 'display',
+      fillAttr: 'value',
+      requireLeadingSpace: true,
+      menuItemTemplate: function (item) {
+        var badge = item.original.type === 'group' ? '<span style="float:right;font-size:10px;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-left:8px;">Group</span>' : '';
+        return '<span>' + item.string + '</span>' + badge;
+      },
+      selectTemplate: function(item) {
+        return mentionSymbol + item.original.value;
+      },
+      trigger: mentionSymbol
+    });
 
-  var $desc = $('textarea#issue_description');
-  var $notes = $('textarea#issue_notes');
+    $('textarea#issue_description, textarea#issue_notes, textarea.wiki-edit').each(function() {
+      if (!this.__tributeAttached) {
+        tributed.attach(this);
+        this.__tributeAttached = true;
+      }
+    });
+  }
 
-  if ($desc.length) { tributed.attach($desc); }
-  if ($notes.length) { tributed.attach($notes); }
-});
+  $(document).ready(initMentionTribute);
+  $(document).ajaxComplete(initMentionTribute);
+})();
 </script>
 
 <style>
